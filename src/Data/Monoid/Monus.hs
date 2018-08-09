@@ -1,4 +1,6 @@
 {-# language TypeFamilies #-}
+{-# language ScopedTypeVariables #-}
+{-# language InstanceSigs #-}
 
 -- | A <https://en.wikipedia.org/wiki/Monus commutative monoid with monus>
 -- is a 'Monoid' equipped with a subtraction operator.
@@ -9,9 +11,12 @@ module Data.Monoid.Monus
 
 import Prelude hiding ((-))
 import Data.Set (Set)
-import Data.Monoid (Any(..),All(..),Sum(..))
+import Data.Complex (Complex(..))
+import Data.Monoid (Any(..),All(..),Sum(..), Endo(..))
 import Control.Applicative (liftA2)
 import Numeric.Natural (Natural)
+import Data.Foldable
+import Data.Coerce
 
 import qualified Prelude as P
 import qualified Data.Set as S
@@ -74,3 +79,16 @@ instance Monus b => Monus (a -> b) where
 
 instance Monus a => Monus (IO a) where
   monus = liftA2 monus
+
+instance Monus a => Monus [a] where
+  monus [] _ = []
+  monus x [] = x
+  monus (x:xs) (y:ys) = monus x y : monus xs ys
+
+instance Monus a => Monus (Maybe a) where
+  monus = liftA2 monus
+
+instance forall a. Monus a => Monus (Endo a) where
+  monus :: Endo a -> Endo a -> Endo a 
+  monus = coerce (liftA2 monus :: (a -> a) -> (a -> a) -> (a -> a))
+
