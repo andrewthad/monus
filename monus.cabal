@@ -1,7 +1,18 @@
 cabal-version:  2.2
 name:           monus
 version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/andrewthad/monus#readme>
+synopsis:       a 'Monus' is a commutative monoid that allows a notion of substraction.
+category:       Data
+description:    A 'Monus' is a commutative monoid that allows a notion of substraction,
+                with the following laws:
+                .
+                x <> (y - x) = y <> (x - y)
+                .
+                (x - y) - z = x - (y <> z)
+                .
+                x - x = mempty
+                .
+                mempty - x = mempty
 homepage:       https://github.com/andrewthad/monus#readme
 bug-reports:    https://github.com/andrewthad/monus/issues
 author:         Andrew Martin
@@ -25,8 +36,8 @@ library
     Data.Map.Annihilate
   hs-source-dirs: src
   build-depends:
-    , base >=4.5 && <5
-    , containers >= 0.4.2.1
+    , base >=4.9 && <5
+    , containers >= 0.4.2.1 && < 0.7.0.0
   default-language: Haskell2010
 
 test-suite test
