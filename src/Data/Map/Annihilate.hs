@@ -23,15 +23,21 @@ import Data.Maybe (fromMaybe)
 import qualified Data.Map.Strict as M
 import qualified Data.Map.Merge.Strict as MM
 
--- todo: manually write Show instance
+-- | A 'Map' that supports annihilation, i.e. it is a 'Monus',
+--   where for 'Monus' values, matching keys will be subtracted,
+--   and keys not shared by both 'Map's will be discarded.
 newtype Map k v = Map (M.Map k v)
   deriving (Eq,Ord,Functor,Foldable,Show)
+--todo: manually write Show instance
 
+-- | Create a singleton 'Map'.
 singleton :: (Monoid v, Eq v) => k -> v -> Map k v
 singleton k v = if v == mempty
   then Map M.empty
   else Map (M.singleton k v)
 
+-- | Lookup a value in a 'Map'. If no value is found, this
+--   returns 'mempty'.
 lookup :: (Ord k, Monoid v) => k -> Map k v -> v
 lookup k (Map m) = fromMaybe mempty (M.lookup k m)
 

@@ -4,6 +4,8 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE TypeOperators #-}
 
+-- | This module provides generic deriving tools for monuses for
+--   product-like structures.
 module Data.Monoid.Monus.Generic
   ( GMonus(..)
   , gmonus
@@ -15,13 +17,19 @@ import GHC.Generics
 import Data.Monoid.Monus
 import Prelude hiding (Num(..))
 
--- | Useful with -XDerivingVia.
+-- | This type is useful with -XDerivingVia.
 newtype WrappedMonus a = WrappedMonus a
   deriving (Generic, Semigroup, Monoid)
 
 instance Monus a => Monus (WrappedMonus a) where
   monus = gmonus;
 
+-- | Generically generate a 'Monus' 'monus' operation for any type
+--   implementing 'Generic'. It is only defined for product types.
+--
+-- @
+-- 'gmonus' a b = 'gmonus' b a
+-- @
 gmonus :: (Generic a, GMonus (Rep a)) => a -> a -> a
 gmonus x y = to (from x `gmonus'` from y)
 
