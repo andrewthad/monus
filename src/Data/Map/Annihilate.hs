@@ -1,4 +1,11 @@
+{-# language CPP #-}
 {-# language GeneralizedNewtypeDeriving #-}
+
+#if !MIN_VERSION_containers(0,5,9)
+module Data.Map.Annihilate
+  (
+  ) where
+#else
 
 module Data.Map.Annihilate
   ( Map
@@ -35,7 +42,7 @@ instance (Ord k, Monoid v, Eq v) => Semigroup (Map k v) where
       MM.dropMissing
       ( MM.zipWithMaybeMatched
         (\_ a b ->
-          let c = a <> b
+          let c = a `mappend` b
            in if c == mempty then Nothing else Just c
         )
       )
@@ -45,6 +52,9 @@ instance (Ord k, Monoid v, Eq v) => Semigroup (Map k v) where
 
 instance (Ord k, Monoid v, Eq v) => Monoid (Map k v) where
   mempty = Map M.empty
+#if !MIN_VERSION_base(4,11,0)
+  mappend x y = x <> y
+#endif
 
 instance (Ord k, Monus v, Eq v) => Monus (Map k v) where
   monus (Map x) (Map y) = Map
@@ -61,3 +71,4 @@ instance (Ord k, Monus v, Eq v) => Monus (Map k v) where
       y
     )
 
+#endif
